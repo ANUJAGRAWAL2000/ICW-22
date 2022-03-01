@@ -2,8 +2,14 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+app.set("view engine", "html");
+
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.redirect("/index")
+})
+
+app.get('/index',function(req,res) {
+  res.sendFile(__dirname + "/index.html")
 })
 
 app.listen(port, () => {
