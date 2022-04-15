@@ -34,13 +34,11 @@ app.get("/", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      for (let index = 0; index < found.length; index++) {
-        console.log(found[index].past);
-      }
       
+      res.render("index",{arr:found});
     }
   });
-  res.render("index");
+  
 });
 
 app.get("/notice", (req, res) => {
