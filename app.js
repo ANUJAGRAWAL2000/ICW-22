@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const { format } = require("express/lib/response");
+const { format, redirect } = require("express/lib/response");
 
 const app = express();
 const port = 3000;
@@ -26,23 +26,72 @@ const noticeSchema = new mongoose.Schema({
   present: String,
   future: String,
 });
+const adminSchema = new mongoose.Schema({
+  id:String,
+  pass:String
+});
+
+const Admin = mongoose.model("admin",adminSchema);
 
 const Notice = mongoose.model("notice", noticeSchema);
+var id ="null";
+var pass = "null";
+// const newAdmin = new Admin({
+//   id:"admin",
+//   pass:"ICweb@2022"
+// });
+// Admin.insertMany([newAdmin],(err)=>{
+//   if(err){
+//     console.log(err);
+//   }
+// });
 
 app.get("/", (req, res) => {
   Notice.find({}, (err, found) => {
     if (err) {
       console.log(err);
+      
     } else {
       
       res.render("index",{arr:found});
     }
   });
-  
 });
 
 app.get("/notice", (req, res) => {
-  res.render("notice");
+  Admin.find({}, (err, found) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if(id === found[0].id  && pass === found[0].pass){
+        res.render("notice");
+      }
+      else{
+        res.redirect("/");
+      }
+    }
+  });
+});
+
+app.get("/login",(req,res)=>{
+  res.render("login");
+});
+
+app.post("/login",(req,res)=>{
+  id = req.body.id;
+  pass=req.body.password;
+  Admin.find({}, (err, found) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if(req.body.id === found[0].id  && req.body.password === found[0].pass){
+        res.render("notice");
+      }
+      else{
+        res.redirect("/");
+      }
+    }
+  });
 });
 
 app.post("/notice", (req, res) => {
